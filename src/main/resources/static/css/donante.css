@@ -1,0 +1,418 @@
+/*---Panel Donante---*/
+
+/* --- ENCABEZADO FIJO --- */
+.donante-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #6A1B9A; /* Morado ALMORA */
+  color: white;
+  padding: 15px 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+.donante-header h1 {
+  font-size: 1.8em;
+  margin: 0;
+}
+
+/* --- PESTAÑAS (TABS) --- */
+.tabs {
+  display: flex;
+  justify-content: center;
+  background-color: #f4f4f4;
+  margin-top: 80px; /* Compensa el header fijo */
+  border-bottom: 2px solid #ddd;
+}
+.tab-btn {
+  padding: 12px 25px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #444;
+  transition: all 0.3s ease;
+}
+.tab-btn:hover, .tab-btn.active {
+  background-color: #e6d6f3;
+  color: #6A1B9A;
+}
+.tab-btn.active {
+  border-bottom: 3px solid #6A1B9A;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.donante-content {
+  padding: 40px 10%;
+}
+.donante-section {
+  display: none;
+}
+.donante-section.active {
+  display: block;
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.donante-section h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* --- TABLAS UNIFICADAS --- */
+.donante-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.donante-table th, .donante-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.donante-table th {
+  background-color: #6A1B9A;
+  color: white;
+  font-weight: 600;
+}
+
+.donante-table tr:hover {
+  background-color: #f9f3ff;
+}
+
+/* --- FORMULARIO DE DONACIÓN --- */
+.donacion-form {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 500px;
+}
+
+.campo {
+  margin-bottom: 15px;
+}
+
+.campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.campo input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.campo input:focus {
+  border-color: #6A1B9A;
+  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
+}
+
+.btn-donar {
+  background-color: #6A1B9A;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 100%;
+}
+
+.btn-donar:hover {
+  background-color: #4A148C;
+}
+
+.catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.catalog-title-area h2 {
+  margin-bottom: 5px;
+}
+
+.catalog-title-area p {
+  color: #666;
+  font-size: 0.95em;
+  margin: 0;
+}
+
+/* Botón verde  (Agregar Nuevo) */
+.btn-agregar-nuevo {
+  background-color: #2E7D32; 
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 30px; 
+  font-weight: 600;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+  white-space: nowrap;
+}
+
+.btn-agregar-nuevo:hover {
+  background-color: #1B5E20;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+}
+
+/* Botones de acción dentro de la tabla  */
+.btn-accion-tabla {
+  background-color: transparent;
+  color: #6A1B9A;
+  border: 1.5px solid #6A1B9A;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-accion-tabla:hover {
+  background-color: #6A1B9A;
+  color: white;
+  box-shadow: 0 3px 8px rgba(106, 27, 154, 0.2);
+}
+
+/* --- SECCIÓN DE PERFIL E IMPACTO --- */
+
+.profile-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+  align-items: start;
+}
+
+.profile-card, .impact-card {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+/* Tarjeta Izquierda (Perfil) */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  background: linear-gradient(135deg, #f9f3ff 0%, #ffffff 100%);
+  border-bottom: 1px solid #eaeaea;
+}
+
+.avatar-placeholder {
+  font-size: 2.5rem;
+  background: #6A1B9A;
+  color: white;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.profile-titles h3 {
+   margin: 0 0 5px 0;
+   color: #333;
+    font-size: 1.5rem; 
+  }
+
+.badge-rol {
+  background: #2E7D32; 
+  color: white; 
+  padding: 4px 10px;
+  border-radius: 20px; 
+  font-size: 0.75rem;
+   font-weight: 600;
+}
+
+.profile-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-label { 
+font-size: 0.85rem;
+color: #777; margin-bottom: 5px;
+display: block;
+ }
+
+.info-value { 
+  color: #222;
+  font-size: 1rem;
+  word-break: break-all; }
+
+.profile-actions {
+  padding: 15px 15px; 
+  background: #fafafa;
+  border-top: 1px solid #eaeaea;
+   text-align: right;
+}
+
+.btn-editar-perfil {
+  background: none;
+   border: 1px solid #6A1B9A; 
+   color: #6A1B9A;
+  padding: 8px 15px; 
+  border-radius: 6px; 
+  font-weight: 600; 
+  cursor: pointer;
+   transition: 0.3s;
+}
+.btn-editar-perfil:hover { 
+  background: #6A1B9A; 
+  color: white; }
+
+/* Tarjeta Derecha  */
+.impact-header { 
+  padding: 25px;
+  background: #6A1B9A;
+  color: white; }
+
+.impact-header h3 { 
+margin: 0 0 5px 0; 
+font-size: 1.4rem; 
+}
+
+.impact-header p {
+  margin: 0; 
+  opacity: 0.9;
+  font-size: 0.95rem; }
+
+.impact-stats { 
+display: flex; 
+padding: 25px; 
+gap: 20px; 
+}
+
+.stat-box {
+flex: 1;
+background: #f9f3ff;
+padding: 20px;
+border-radius: 10px;
+text-align: center;
+ border: 1px solid #e6d6f3;
+}
+
+.stat-box h4 { 
+color: #6A1B9A; 
+font-size: 2rem; 
+margin: 0 0 5px 0;
+}
+
+.stat-box p { 
+  color: #555; 
+  margin: 0; 
+  font-size: 0.9rem;
+  font-weight: 500;
+ }
+
+.impact-message {
+  padding: 0 25px 25px;
+  color: #666; 
+  font-size: 0.95rem; 
+  text-align: center; }
+
+
+@media (max-width: 800px) {
+  .profile-container { grid-template-columns: 1fr; }
+}
+
+
+/*Ventana para Editar Perfil*/
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); 
+  display: none; 
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(3px); 
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.btn-cancelar {
+  background: #f1f1f1;
+  color: #444; border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-cancelar:hover { background: #e2e2e2; }
+
+.btn-guardar {
+  background: #6A1B9A; color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: 0.3s;
+}
+.btn-guardar:hover { background: #4A148C; }

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión | Fundación ALMORA</title>
+
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">ALMORA</div>
+    </header>
+
+    <main class="register-page">
+      <section class="formulario">
+        <h2>Inicio de Sesión</h2>
+        <p>Ingresa tus credenciales para continuar.</p>
+
+        <!--  MENSAJE ERROR -->
+        <p id="mensajeError" class="error-message" style="display: none">
+          ❌ Credenciales incorrectas
+        </p>
+
+        <!--  MENSAJE LOGOUT -->
+        <p id="mensajeLogout" class="success-message" style="display: none">
+          ✅ Sesión cerrada correctamente
+        </p>
+
+        <!--  FORMULARIO SPRING SECURITY -->
+        <form method="POST" action="/login">
+          <div class="campo">
+            <label>Correo electrónico:</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Ingresa tu correo"
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label>Contraseña:</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Ingresa tu contraseña"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-registrar">Iniciar Sesión</button>
+        </form>
+
+        <p class="texto-secundario">
+          ¿No tienes cuenta?
+          <a href="register.html" class="link-registro">Regístrate aquí</a>
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer-fijo">
+      © 2025 Fundación ALMORA - Todos los derechos reservados
+    </footer>
+
+    <!--  SCRIPT PARA MENSAJES -->
+    <script>
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has("error")) {
+        document.getElementById("mensajeError").style.display = "block";
+      }
+
+      if (params.has("logout")) {
+        document.getElementById("mensajeLogout").style.display = "block";
+      }
+    </script>
+  </body>
+</html>

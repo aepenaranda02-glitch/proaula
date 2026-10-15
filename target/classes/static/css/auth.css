@@ -1,0 +1,131 @@
+/* =========================================================
+🔐 FORMULARIOS (Login / Registro)
+========================================================= */
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  
+  /* CORRECCIÓN TÉCNICA: Aumento del padding superior de 60px a 120px */
+  padding: 120px 20px 100px; 
+  
+  min-height: calc(100vh - 160px);
+  background-color: #FAFAFA;
+}
+
+.formulario {
+  background: #fff;
+  padding: 35px 40px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.formulario h2 {
+  color: #6A1B9A;
+  margin-bottom: 10px;
+}
+
+.formulario p {
+  color: #555;
+  margin-bottom: 25px;
+  font-size: 0.95em;
+}
+
+.campo {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+}
+
+.btn-registrar {
+  background-color: #6A1B9A;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.btn-registrar:hover {
+  background-color: #4A148C;
+}
+
+.link-registro {
+  color: #6A1B9A;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-registro:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+⚠️ MENSAJE DE ERROR
+========================================================= */
+.error-message {
+  color: #e74c3c;
+  margin-top: 10px;
+  font-weight: 600;
+  transition: opacity 0.5s ease;
+}
+
+/* =========================================================
+✨ VALIDACIÓN VISUAL DE CAMPOS
+========================================================= */
+
+/* Estilo cuando el usuario hace clic y lo que escribe es incorrecto */
+.campo input:focus:invalid {
+  border-color: #e74c3c; /* Rojo de error */
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.2);
+  background-color: #fff8f8;
+}
+
+/* Estilo cuando lo que escribe cumple con las reglas (4 carac. o 10 números) */
+.campo input:focus:valid {
+  border-color: #2e7d32; /* Verde de éxito */
+  box-shadow: 0 0 5px rgba(46, 125, 50, 0.2);
+  background-color: #f8fff8;
+}
+
+/* Mensaje de ayuda que solo aparece cuando el campo es inválido y tiene el foco */
+.input-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: #e74c3c;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* Lógica de visualización: si el input es inválido, muestra el span siguiente */
+.campo input:focus:invalid + .input-hint {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

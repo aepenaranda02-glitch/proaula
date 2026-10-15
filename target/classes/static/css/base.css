@@ -1,0 +1,155 @@
+/* =========================================================
+🌐 RESET GENERAL Y BASE
+========================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #FAFAFA;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+🔹 ENCABEZADO (HEADER) GLOBAL
+========================================================= */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.7em;
+  font-weight: 700;
+  color: #6A1B9A;
+}
+
+/* =========================================================
+🔹 MENÚ DE NAVEGACIÓN GLOBAL
+========================================================= */
+.menu-derecha {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.register-btn,
+.dropbtn {
+  font-weight: 600;
+  color: #fff;
+  background-color: #6A1B9A;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.register-btn:hover,
+.dropbtn:hover {
+  background-color: #4A148C;
+}
+
+/* 🔽 Dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  top: 110%;
+  right: 0;
+  z-index: 10;
+  overflow: hidden;
+  animation: fadeIn 0.25s ease;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 0.95em;
+  border-bottom: 1px solid #f2f2f2;
+  transition: background 0.3s, color 0.3s;
+}
+
+.dropdown-content a:last-child {
+  border-bottom: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #6A1B9A;
+  color: #fff;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+🔹 PIE DE PÁGINA GLOBAL
+========================================================= */
+footer {
+  background-color: #6A1B9A;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  font-size: 0.9em;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+🚪 BOTÓN CERRAR SESIÓN GLOBAL
+========================================================= */
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}

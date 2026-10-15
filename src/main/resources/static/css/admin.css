@@ -1,0 +1,183 @@
+/* =========================================================
+📊 PANEL ADMINISTRATIVO
+========================================================= */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #6A1B9A;
+  color: white;
+  padding: 15px 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  background-color: #f4f4f4;
+  margin-top: 80px;
+  border-bottom: 2px solid #ddd;
+}
+
+.tab-btn {
+  padding: 12px 25px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #444;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover, .tab-btn.active {
+  background-color: #e6d6f3;
+  color: #6A1B9A;
+}
+
+.tab-btn.active {
+  border-bottom: 3px solid #6A1B9A;
+}
+
+.admin-section {
+  display: none;
+  padding: 40px 10%;
+}
+
+.admin-section.active {
+  display: block;
+}
+
+/* --- TABLAS --- */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table th, .admin-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-table th {
+  background-color: #6A1B9A;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background-color: #f9f3ff;
+}
+
+/* =========================================================
+🔍 NUEVO BUSCADOR UI/UX (Con los colores de ALMORA)
+========================================================= */
+.search-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.search-input:focus {
+  border-color: #6A1B9A; /* Borde morado corporativo */
+  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.2); /* Sombra exterior morada suave */
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* --- BOTONES ADMIN --- */
+.btn-admin {
+  background-color: #6A1B9A;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-admin:hover { background-color: #4A148C; }
+
+/* =========================================================
+📊 CONTROLES DE ADMINISTRACIÓN (Buscador y Contador)
+========================================================= */
+
+.admin-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 450px;
+}
+
+/* El estilo de .search-input ya lo tienes, pero aquí lo reforzamos */
+.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #eaeaea;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #6A1B9A;
+  outline: none;
+}
+
+.counter-badge {
+  background: #6A1B9A;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(106, 27, 154, 0.2);
+  white-space: nowrap;
+}
+
+/* Ajuste para que en móviles el buscador ocupe todo el ancho */
+@media (max-width: 600px) {
+  .admin-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-box {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel Donante | Fundación ALMORA</title>
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/donante.css" />
+  </head>
+
+  <body>
+    <header class="donante-header">
+      <h1>Panel Donante</h1>
+      <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="perfil">Mi Perfil</button>
+      <button class="tab-btn" data-tab="donaciones">Donar</button>
+      <button class="tab-btn" data-tab="historial">Historial</button>
+      <button class="tab-btn" data-tab="contacto">Contacto</button>
+    </nav>
+
+    <main class="donante-content">
+      <!-- SECCIÓN PERFIL -->
+      <section id="perfil" class="donante-section active">
+        <h2>Mi Perfil</h2>
+
+        <div class="profile-container">
+          <div class="profile-card">
+            <div class="profile-header">
+              <div class="avatar-placeholder">👤</div>
+              <div class="profile-titles">
+                <h3 id="perfil-nombre">Cargando...</h3>
+                <span class="badge-rol">Donante Activo</span>
+              </div>
+            </div>
+
+            <div class="profile-body">
+              <div class="info-group">
+                <span class="info-label">Correo Electrónico</span>
+                <strong id="perfil-email" class="info-value">...</strong>
+              </div>
+              <div class="info-group">
+                <span class="info-label">Teléfono</span>
+                <strong id="perfil-telefono" class="info-value">...</strong>
+              </div>
+            </div>
+
+            <div class="profile-actions">
+              <button class="btn-editar-perfil" onclick="editarPerfil()">
+                ✏️ Editar mis datos
+              </button>
+            </div>
+          </div>
+
+          <div class="impact-card">
+            <div class="impact-header">
+              <h3>Mi Impacto en ALMORA</h3>
+              <p>Gracias por tu apoyo constante a nuestra fundación.</p>
+            </div>
+            <div class="impact-stats">
+              <div class="stat-box">
+                <h4 id="stat-total-donaciones">0</h4>
+                <p>Donaciones Realizadas</p>
+              </div>
+              <div class="stat-box">
+                <h4 id="stat-total-articulos">0</h4>
+                <p>Artículos Donados</p>
+              </div>
+            </div>
+            <div class="impact-message">
+              <p>
+                💡
+                <em
+                  >"Mucha gente pequeña, en lugares pequeños, haciendo cosas
+                  pequeñas, puede cambiar el mundo."</em
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN REGISTRAR DONACIÓN -->
+
+      <section id="donaciones" class="donante-section">
+        <div class="catalog-header">
+          <div class="catalog-title-area">
+            <h2>Catálogo de Donaciones</h2>
+            <p>
+              Selecciona un producto para donar o registra uno nuevo si no está
+              en la lista.
+            </p>
+          </div>
+          <button class="btn-agregar-nuevo" onclick="donarNuevoProducto()">
+            + Agregar Producto Nuevo
+          </button>
+        </div>
+
+        <table class="donante-table" id="productos-donar-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th style="text-align: center">Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- SECCIÓN HISTORIAL -->
+      <section id="historial" class="donante-section">
+        <h2>Historial de Donaciones</h2>
+        <table class="donante-table" id="tablaHistorial">
+          <thead>
+            <tr>
+              <th>ID Registro</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- SECCIÓN CONTACTO -->
+      <section id="contacto" class="donante-section">
+        <h2>Contacto con la Fundación</h2>
+        <p>
+          Si tienes alguna duda o quieres realizar una donación especial,
+          escríbenos a:
+        </p>
+        <p><strong>contacto@almora.org</strong></p>
+      </section>
+    </main>
+
+    <footer class="footer-fijo">
+      © 2025 Fundación ALMORA — Panel del Donante
+    </footer>
+
+    <script>
+      let idUsuarioLogueado = "";
+
+      // --- Manejo de pestañas ---
+      const tabs = document.querySelectorAll(".tab-btn");
+      const sections = document.querySelectorAll(".donante-section");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+
+          sections.forEach((sec) => {
+            sec.classList.toggle("active", sec.id === tab.dataset.tab);
+          });
+
+          // Disparadores dinámicos según la pestaña seleccionada
+          if (tab.dataset.tab === "historial") cargarHistorial();
+          if (tab.dataset.tab === "donaciones") cargarCatologoProductos();
+        });
+      });
+
+      //-- Cargar Perfil  ---
+      async function cargarPerfil() {
+        try {
+          const response = await fetch("/api/usuarios/perfil");
+          if (!response.ok) throw new Error("Error al obtener el perfil");
+          const usuario = await response.json();
+
+          idUsuarioLogueado = usuario.idUsuario || usuario.id;
+          const elemNombre = document.getElementById("perfil-nombre");
+          const elemEmail = document.getElementById("perfil-email");
+          const elemTelefono = document.getElementById("perfil-telefono");
+
+          if (elemNombre) elemNombre.textContent = usuario.nombre || "Usuario";
+          if (elemEmail)
+            elemEmail.textContent = usuario.correo || "No registrado";
+          if (elemTelefono)
+            elemTelefono.textContent = usuario.telefono || "No registrado";
+          cargarHistorial();
+        } catch (error) {
+          console.error("Error al cargar perfil:", error);
+        }
+      }
+
+      //-- Editar Perfil--
+      function editarPerfil() {
+        document.getElementById("modalEditarPerfil").classList.add("active");
+        actualizarInputEdicion(); // Configura el input según la primera opción
+      }
+
+      function cerrarModalEdicion() {
+        document.getElementById("modalEditarPerfil").classList.remove("active");
+        document.getElementById("inputNuevoValor").value = "";
+      }
+
+      function actualizarInputEdicion() {
+        const seleccion = document.getElementById("selectEdicion").value;
+        const input = document.getElementById("inputNuevoValor");
+        const label = document.getElementById("labelNuevoValor");
+
+        input.value = "";
+
+        if (seleccion === "nombre") {
+          label.textContent = "Nuevo nombre completo:";
+          input.type = "text";
+          input.placeholder = "Ej: Emanuel Cali";
+        } else if (seleccion === "telefono") {
+          label.textContent = "Nuevo teléfono (10 dígitos):";
+          input.type = "tel";
+          input.placeholder = "Ej: 3001234567";
+        } else if (seleccion === "password") {
+          label.textContent = "Nueva contraseña (mínimo 5 caracteres):";
+          input.type = "password";
+          input.placeholder = "Escribe tu nueva contraseña";
+        }
+      }
+
+      //-- Guardar cambios de edición--
+      async function guardarEdicion() {
+        const seleccion = document.getElementById("selectEdicion").value;
+        const valorNuevo = document
+          .getElementById("inputNuevoValor")
+          .value.trim();
+        let datosAEnviar = {};
+
+        if (!valorNuevo) {
+          alert("⚠️ El campo no puede estar vacío.");
+          return;
+        }
+        if (seleccion === "nombre") {
+          datosAEnviar.nombre = valorNuevo;
+        } else if (seleccion === "telefono") {
+          if (!/^[0-9]{10}$/.test(valorNuevo)) {
+            alert("⚠️ Ingrese un número de teléfono válido.");
+            return;
+          }
+          datosAEnviar.telefono = valorNuevo;
+        } else if (seleccion === "password") {
+          if (valorNuevo.length < 5) {
+            alert("⚠️ La contraseña debe tener al menos 5 caracteres.");
+            return;
+          }
+          datosAEnviar.password = valorNuevo;
+        }
+
+        try {
+          const res = await fetch(`/api/usuarios/${idUsuarioLogueado}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datosAEnviar),
+          });
+
+          if (res.ok) {
+            alert("✅ ¡Datos actualizados con éxito!");
+            cerrarModalEdicion();
+            cargarPerfil();
+          } else {
+            alert("❌ Hubo un error al actualizar los datos.");
+          }
+        } catch (error) {
+          console.error("Error en la actualización:", error);
+        }
+      }
+
+      //  Cargar Catálogo de Productos ---
+      async function cargarCatologoProductos() {
+        try {
+          const res = await fetch("/api/productos");
+          const productos = await res.json();
+          const tbody = document.querySelector("#productos-donar-table tbody");
+          tbody.innerHTML = "";
+
+          if (productos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4">No hay productos en el catálogo.</td></tr>`;
+            return;
+          }
+
+          productos.forEach((prod) => {
+            tbody.innerHTML += `
+        <tr>
+          <td><small>${prod.id || "—"}</small></td>
+          <td><strong>${prod.nombreProducto}</strong></td>
+          <td>${prod.tipoProducto || "Sin descripción"}</td>
+          <td style="text-align: center;">
+            <button class="btn-accion-tabla" onclick="donarProductoExistente('${prod.id}', '${prod.nombreProducto}')">
+              Añadir a Donación
+            </button>
+          </td>
+        </tr>`;
+          });
+        } catch (error) {
+          console.error("Error al cargar catálogo:", error);
+        }
+      }
+
+      //  Procesador Central de Donaciones ---
+      async function procesarRegistroDonacion(
+        idProducto,
+        cantidad,
+        nombreProducto,
+      ) {
+        const nuevaDonacion = {
+          usuarioId: idUsuarioLogueado,
+          fechaDonacion: new Date().toLocaleDateString(),
+          productos: [idProducto],
+          cantidad: parseInt(cantidad, 10),
+        };
+
+        try {
+          const res = await fetch("/api/donaciones", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevaDonacion),
+          });
+
+          if (res.ok) {
+            alert(
+              `¡Gracias! Tu donación de ${cantidad} unidad(es) de ${nombreProducto} se ha registrado.`,
+            );
+            cargarHistorial();
+          }
+        } catch (error) {
+          console.error("Error al registrar donación:", error);
+        }
+      }
+
+      // --Acciones de los Botones ---
+
+      function donarProductoExistente(idProducto, nombreProducto) {
+        const cantidad = prompt(
+          `¿Qué cantidad de "${nombreProducto}" deseas donar?`,
+        );
+        if (cantidad && !isNaN(cantidad) && parseInt(cantidad) > 0) {
+          procesarRegistroDonacion(idProducto, cantidad, nombreProducto);
+        }
+      }
+
+      // Botón verde "+ Agregar Producto Nuevo"
+
+      async function donarNuevoProducto() {
+        const nombre = prompt("Nombre del nuevo producto:");
+        if (!nombre || nombre.trim() === "") return;
+
+        const nombreLimpio = nombre.trim();
+
+        try {
+          const resCat = await fetch("/api/productos");
+          const catalogo = await resCat.json();
+
+          const existe = catalogo.find(
+            (p) =>
+              p.nombreProducto.toLowerCase() === nombreLimpio.toLowerCase(),
+          );
+
+          if (existe) {
+            alert(
+              `⚠️ El producto "${nombreLimpio}" ya existe en nuestro catálogo. Por favor, búscalo en la tabla y usa el botón "Añadir a Donación".`,
+            );
+            return;
+          }
+        } catch (error) {
+          console.error("Error al validar el catálogo:", error);
+        }
+
+        const descripcion = prompt(`Descripción para "${nombreLimpio}":`);
+        const cantidad = prompt(
+          `¿Qué cantidad de "${nombreLimpio}" deseas donar?`,
+        );
+
+        if (cantidad !== null && !isNaN(cantidad) && parseInt(cantidad) > 0) {
+          try {
+            const resProducto = await fetch("/api/productos", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                nombreProducto: nombreLimpio,
+                cantidad: 0,
+                tipoProducto: descripcion || "Sin descripción",
+                fechaCaducidad: "No aplica",
+              }),
+            });
+
+            if (resProducto.ok) {
+              const productoCreado = await resProducto.json();
+              await procesarRegistroDonacion(
+                productoCreado.id,
+                cantidad,
+                nombreLimpio,
+              );
+              cargarCatologoProductos();
+            } else {
+              alert("❌ Error al registrar el producto en el servidor.");
+            }
+          } catch (error) {
+            console.error("Error en flujo de persistencia doble:", error);
+          }
+        } else if (cantidad !== null) {
+          alert("⚠️ Cantidad inválida.");
+        }
+      }
+
+      //  --Cargar Historial  ---
+
+      async function cargarHistorial() {
+        try {
+          const resProd = await fetch("/api/productos");
+          const catalogoProductos = await resProd.json();
+
+          const res = await fetch("/api/donaciones");
+          const data = await res.json();
+          const tbody = document.querySelector("#tablaHistorial tbody");
+          if (tbody) tbody.innerHTML = "";
+
+          const misDonaciones = data.filter(
+            (d) => d.usuarioId === idUsuarioLogueado,
+          );
+
+          const statTotal = document.getElementById("stat-total-donaciones");
+          if (statTotal) statTotal.textContent = misDonaciones.length;
+
+          // -- Suma de Donaciones --
+          const statArticulos = document.getElementById("stat-total-articulos");
+          if (statArticulos) {
+            const totalArticulos = misDonaciones.reduce((suma, donacion) => {
+              return suma + (parseInt(donacion.cantidad) || 0);
+            }, 0);
+
+            statArticulos.textContent = totalArticulos;
+          }
+
+          if (misDonaciones.length === 0) {
+            if (tbody)
+              tbody.innerHTML = `<tr><td colspan="4">Aún no has realizado donaciones.</td></tr>`;
+            return;
+          }
+
+          misDonaciones.forEach((don) => {
+            let idGuardado =
+              don.productos && don.productos.length > 0
+                ? don.productos[0]
+                : null;
+            let productoEncontrado = catalogoProductos.find(
+              (p) => p.id === idGuardado,
+            );
+
+            let productoNombre = productoEncontrado
+              ? productoEncontrado.nombreProducto
+              : idGuardado || "—";
+
+            let cantidadMostrar =
+              don.cantidad !== null && don.cantidad !== undefined
+                ? don.cantidad
+                : "—";
+
+            if (
+              typeof productoNombre === "string" &&
+              productoNombre.includes("(")
+            ) {
+              const partes = productoNombre.split("(");
+              productoNombre = partes[0].trim();
+              cantidadMostrar = partes[1].replace(")", "").trim();
+            }
+
+            if (tbody) {
+              tbody.innerHTML += `
+                  <tr>
+                    <td><small>${don.id}</small></td>
+                    <td><strong>${productoNombre}</strong></td>
+                    <td>${cantidadMostrar}</td>
+                    <td>${don.fechaDonacion}</td>
+                  </tr>`;
+            }
+          });
+        } catch (error) {
+          console.error("Error al cargar historial:", error);
+        }
+      }
+
+      // Inicialización
+      cargarPerfil();
+
+      document.getElementById("logoutBtn").onclick = () => {
+        window.location.href = "/logout";
+      };
+    </script>
+
+    <div id="modalEditarPerfil" class="modal-overlay">
+      <div class="modal-content">
+        <h3 style="color: #6a1b9a; margin-top: 0">Editar Mis Datos</h3>
+        <p style="font-size: 0.9em; color: #555; margin-bottom: 20px">
+          Selecciona el dato que deseas actualizar.
+        </p>
+
+        <div class="campo">
+          <label for="selectEdicion">¿Qué deseas cambiar?</label>
+          <select id="selectEdicion" onchange="actualizarInputEdicion()">
+            <option value="nombre">Nombre completo</option>
+            <option value="telefono">Número de teléfono</option>
+            <option value="password">Contraseña</option>
+          </select>
+        </div>
+
+        <div class="campo" id="campoNuevoValor">
+          <label id="labelNuevoValor" for="inputNuevoValor"
+            >Nuevo nombre:</label
+          >
+          <input
+            type="text"
+            id="inputNuevoValor"
+            placeholder="Ingresa tu nuevo nombre"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancelar" onclick="cerrarModalEdicion()">
+            Cancelar
+          </button>
+          <button class="btn-guardar" onclick="guardarEdicion()">
+            Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

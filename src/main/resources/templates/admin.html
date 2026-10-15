@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel de Administración | Fundación ALMORA</title>
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+
+  <body>
+    <header class="admin-header">
+      <h1>Panel de Administración</h1>
+      <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="productos">Productos</button>
+      <button class="tab-btn" data-tab="donantes">Donantes</button>
+      <button class="tab-btn" data-tab="donaciones">Donaciones</button>
+    </nav>
+
+    <main class="admin-content">
+      <!-- SECCIÓN PRODUCTOS -->
+      <section id="productos" class="admin-section active">
+        <h2>Inventario de Productos</h2>
+
+        <div class="admin-controls">
+          <div class="search-box">
+            <input
+              type="text"
+              id="filtroProductosBusqueda"
+              class="search-input"
+              placeholder="🔍 Buscar por Nombre o Descripción..."
+              onkeyup="filtrarListaProductos()"
+            />
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <div class="counter-badge" style="background: #2e7d32">
+              En Catálogo: <span id="total-productos-count">0</span>
+            </div>
+            <div class="counter-badge">
+              Total Unidades: <span id="total-stock-count">0</span>
+            </div>
+          </div>
+        </div>
+
+        <table class="admin-table" id="productos-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button class="btn-admin" onclick="agregarItem('productos')">
+          Agregar Producto
+        </button>
+      </section>
+
+      <!-- SECCIÓN DONANTES -->
+      <section id="donantes" class="admin-section">
+        <h2>Gestión de Donantes</h2>
+
+        <div class="admin-controls">
+          <div class="search-box">
+            <input
+              type="text"
+              id="filtroDonantesBusqueda"
+              class="search-input"
+              placeholder="🔍 Buscar por Nombre, Correo o Teléfono..."
+              onkeyup="filtrarListaDonantes()"
+            />
+          </div>
+          <div class="counter-badge">
+            Total Donantes: <span id="total-donantes-count">0</span>
+          </div>
+        </div>
+
+        <table class="admin-table" id="donantes-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button class="btn-admin" onclick="agregarItem('donantes')">
+          Agregar Donante
+        </button>
+      </section>
+
+      <!-- SECCIÓN DONACIONES -->
+      <section id="donaciones" class="admin-section">
+        <h2>Registro Global de Donaciones</h2>
+        <div class="search-container">
+          <input
+            type="text"
+            id="filtroDonante"
+            class="search-input"
+            placeholder="🔍 Buscar por ID o Nombre del Donante..."
+            onkeyup="filtrarDonaciones()"
+          />
+        </div>
+
+        <table class="admin-table" id="donaciones-table">
+          <thead>
+            <tr>
+              <th>ID Donación</th>
+              <th>ID Donante</th>
+              <th>Nombre Donante</th>
+              <th>Fecha</th>
+              <th>Detalles</th>
+              <th>Cantidad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer class="footer-fijo">
+      © 2025 Fundación ALMORA — Panel de Administración
+    </footer>
+
+    <script>
+      const API_BASE = "/api";
+
+      let donacionesGlobales = [];
+      let donantesGlobales = [];
+      let productosGlobales = [];
+
+      // --- Función para Enrutamiento ---
+      function getEndpoint(seccion) {
+        return seccion === "donantes" ? "usuarios" : seccion;
+      }
+
+      // --- Manejo de Pestañas ---
+      document.querySelectorAll(".tab-btn").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+
+          document.querySelectorAll(".admin-section").forEach((sec) => {
+            sec.classList.toggle("active", sec.id === tab.dataset.tab);
+          });
+
+          cargarDatos(tab.dataset.tab);
+        });
+      });
+
+      // --- Cargar datos de la API ---
+      async function cargarDatos(seccion) {
+        try {
+          if (seccion === "donaciones" && donantesGlobales.length === 0) {
+            const resDonantes = await fetch(`${API_BASE}/usuarios`);
+            if (resDonantes.ok) {
+              const todos = await resDonantes.json();
+              donantesGlobales = todos.filter(
+                (u) => u.rol && u.rol.trim().toUpperCase() === "DONANTE",
+              );
+            }
+          }
+
+          const endpoint = getEndpoint(seccion);
+          const res = await fetch(`${API_BASE}/${endpoint}`);
+          if (!res.ok) throw new Error(`Error en ${seccion}`);
+          let data = await res.json();
+
+          if (seccion === "donantes") {
+            data = data.filter(
+              (u) => u.rol && u.rol.trim().toUpperCase() === "DONANTE",
+            );
+            donantesGlobales = data;
+          }
+          if (seccion === "productos") {
+            productosGlobales = data;
+          }
+          if (seccion === "donaciones") donacionesGlobales = data;
+
+          renderTable(seccion, data);
+        } catch (err) {
+          console.error("Error detallado:", err);
+          const tbody = document.querySelector(
+            `#${seccion === "donaciones" ? "donaciones" : seccion}-table tbody`,
+          );
+          if (tbody)
+            tbody.innerHTML = `<tr><td colspan="6">Error al cargar datos. Revisa la consola.</td></tr>`;
+        }
+      }
+
+      // --- Renderizar tablas dinámicamente ---
+      function renderTable(seccion, data) {
+        const tableId =
+          seccion === "donaciones" ? "donaciones-table" : `${seccion}-table`;
+        const tbody = document.querySelector(`#${tableId} tbody`);
+
+        if (seccion === "productos") {
+          const countCatalogo = document.getElementById(
+            "total-productos-count",
+          );
+          const countStock = document.getElementById("total-stock-count");
+          if (countCatalogo) countCatalogo.textContent = data ? data.length : 0;
+          if (countStock) {
+            countStock.textContent = data
+              ? data.reduce((s, item) => s + (parseInt(item.cantidad) || 0), 0)
+              : 0;
+          }
+        }
+
+        if (seccion === "donantes") {
+          const contador = document.getElementById("total-donantes-count");
+          if (contador) contador.textContent = data ? data.length : 0;
+        }
+
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7">No hay registros disponibles.</td></tr>`;
+          return;
+        }
+        data.forEach((item) => {
+          const tr = document.createElement("tr");
+          let contenido = "";
+
+          if (seccion === "productos") {
+            contenido = `
+              <td>${item.id || "—"}</td>
+              <td>${item.nombreProducto}</td>
+              <td>${item.tipoProducto}</td>
+              <td>${item.cantidad}</td>
+              <td>
+                <button class="btn-accion" onclick="editarItem('productos', '${item.id}')">✏️</button>
+                <button class="btn-accion" onclick="eliminarItem('productos', '${item.id}')">🗑️</button>
+              </td>`;
+          } else if (seccion === "donantes") {
+            const idU = item.idUsuario || item.id;
+            contenido = `
+              <td>${idU}</td>
+              <td>${item.nombre}</td>
+              <td>${item.correo}</td>
+              <td>${item.telefono}</td>
+              <td>
+                <button class="btn-accion" onclick="editarItem('donantes', '${idU}')">✏️</button>
+                <button class="btn-accion" onclick="eliminarItem('donantes', '${idU}')">🗑️</button>
+              </td>`;
+          } else if (seccion === "donaciones") {
+            const donanteMatch = donantesGlobales.find(
+              (d) => (d.idUsuario || d.id) === item.usuarioId,
+            );
+            const idProd =
+              item.productos && item.productos.length > 0
+                ? item.productos[0]
+                : null;
+            const productoMatch = productosGlobales.find(
+              (p) => p.id === idProd,
+            );
+            const nombreMostrar = productoMatch
+              ? productoMatch.nombreProducto
+              : idProd || "—";
+
+            contenido = `
+              <td>${item.id}</td>
+              <td>${item.usuarioId || "Anónimo"}</td>
+              <td><strong>${donanteMatch ? donanteMatch.nombre : "Desconocido"}</strong></td>
+              <td>${item.fechaDonacion || "—"}</td>
+              <td>${nombreMostrar}</td> 
+              <td>${item.cantidad || "—"}</td>
+              <td>
+                <button class="btn-accion" onclick="eliminarItem('donaciones', '${item.id}')">🗑️</button>
+              </td>`;
+          }
+
+          tr.innerHTML = contenido;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // --- Filtrar Donaciones ---
+      function filtrarDonaciones() {
+        const valor = document
+          .getElementById("filtroDonante")
+          .value.toLowerCase()
+          .trim();
+
+        const filtradas = donacionesGlobales.filter((don) => {
+          const idDon = (don.usuarioId || "").toLowerCase();
+          const match = donantesGlobales.find(
+            (d) => d.idUsuario === don.usuarioId || d.id === don.usuarioId,
+          );
+          const nomDon =
+            match && match.nombre ? match.nombre.toLowerCase() : "";
+
+          return idDon.includes(valor) || nomDon.includes(valor);
+        });
+
+        renderTable("donaciones", filtradas);
+      }
+
+      // --- Filtrar Donantes  ---
+      function filtrarListaDonantes() {
+        const valor = document
+          .getElementById("filtroDonantesBusqueda")
+          .value.toLowerCase()
+          .trim();
+
+        const filtrados = donantesGlobales.filter((donante) => {
+          const id = (donante.idUsuario || donante.id || "").toLowerCase();
+          const nombre = (donante.nombre || "").toLowerCase();
+          const correo = (donante.correo || "").toLowerCase();
+          const telefono = (donante.telefono || "").toLowerCase();
+
+          return (
+            id.includes(valor) ||
+            nombre.includes(valor) ||
+            correo.includes(valor) ||
+            telefono.includes(valor)
+          );
+        });
+
+        renderTable("donantes", filtrados);
+      }
+
+      // --- Filtrar Productos  ---
+      function filtrarListaProductos() {
+        const valor = document
+          .getElementById("filtroProductosBusqueda")
+          .value.toLowerCase()
+          .trim();
+
+        const filtrados = productosGlobales.filter((producto) => {
+          const nombre = (producto.nombreProducto || "").toLowerCase();
+          const descripcion = (producto.tipoProducto || "").toLowerCase();
+
+          return nombre.includes(valor) || descripcion.includes(valor);
+        });
+
+        renderTable("productos", filtrados);
+      }
+
+      // --- Agregar Nuevo  ---
+      async function agregarItem(seccion) {
+        if (seccion === "productos") {
+          const nombreInput = prompt("Nombre del nuevo producto:");
+          if (!nombreInput) return;
+
+          const nombreLimpio = nombreInput.trim();
+          const existe = productosGlobales.find(
+            (p) =>
+              p.nombreProducto.toLowerCase() === nombreLimpio.toLowerCase(),
+          );
+
+          if (existe) {
+            alert(`⚠️ El producto "${nombreLimpio}" ya existe en el catálogo.`);
+            return;
+          }
+
+          const nuevo = {
+            nombreProducto: nombreLimpio,
+            cantidad: parseInt(prompt("Cantidad inicial:") || 0),
+            tipoProducto: prompt("Descripción:"),
+            fechaCaducidad: "No aplica",
+          };
+
+          const res = await fetch(`${API_BASE}/productos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevo),
+          });
+
+          if (res.ok) {
+            alert("✅ Producto creado.");
+            cargarDatos("productos");
+          } else {
+            alert(
+              "❌ Error al crear: Es posible que el nombre ya esté registrado.",
+            );
+          }
+        }
+      }
+
+      // --- Editar ---
+      async function editarItem(seccion, id) {
+        const endpoint = getEndpoint(seccion);
+
+        try {
+          const resGet = await fetch(`${API_BASE}/${endpoint}/${id}`);
+          if (!resGet.ok) throw new Error("No se pudo obtener la información.");
+          const obj = await resGet.json();
+
+          let actualizado = {};
+
+          if (seccion === "productos") {
+            const nuevoNombre = prompt(
+              "Nombre del producto:",
+              obj.nombreProducto,
+            );
+            if (!nuevoNombre) return;
+            if (
+              nuevoNombre.toLowerCase() !== obj.nombreProducto.toLowerCase()
+            ) {
+              const existe = productosGlobales.find(
+                (p) =>
+                  p.nombreProducto.toLowerCase() ===
+                  nuevoNombre.trim().toLowerCase(),
+              );
+              if (existe) {
+                alert("⚠️ Error: Ya existe otro producto con ese nombre.");
+                return;
+              }
+            }
+
+            actualizado = {
+              id: id,
+              nombreProducto: nuevoNombre.trim(),
+              cantidad: parseInt(
+                prompt("Cantidad en stock:", obj.cantidad) || 0,
+              ),
+              tipoProducto: prompt("Descripción/Categoría:", obj.tipoProducto),
+              fechaCaducidad: obj.fechaCaducidad || "No aplica",
+            };
+          } else if (seccion === "donantes") {
+            actualizado = {
+              idUsuario: id,
+              nombre: prompt("Nombre:", obj.nombre),
+              correo: prompt("Correo:", obj.correo),
+              telefono: prompt("Teléfono:", obj.telefono),
+              rol: obj.rol,
+              password: obj.password,
+            };
+          }
+          const resPut = await fetch(`${API_BASE}/${endpoint}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(actualizado),
+          });
+
+          if (resPut.ok) {
+            alert("✅ Registro actualizado correctamente.");
+            cargarDatos(seccion);
+          } else {
+            alert("❌ Error al actualizar el registro.");
+          }
+        } catch (error) {
+          console.error("Error en la edición:", error);
+          alert("Hubo un fallo al intentar editar.");
+        }
+      }
+
+      // --- Eliminar---
+      async function eliminarItem(seccion, id) {
+        if (!confirm("¿Seguro que desea eliminar?")) return;
+
+        const endpoint = getEndpoint(seccion);
+        const res = await fetch(`${API_BASE}/${endpoint}/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          alert("Eliminado.");
+          cargarDatos(seccion);
+        }
+      }
+
+      // --- Sesión ---
+      document.getElementById("logoutBtn").onclick = () => {
+        window.location.href = "/logout";
+      };
+
+      // Carga inicial
+      cargarDatos("productos");
+    </script>
+  </body>
+</html>
